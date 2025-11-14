@@ -2,3 +2,4 @@ pandas
 numpy
 Scikit-learn
 flask
+xgboost
