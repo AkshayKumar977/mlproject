@@ -408,6 +408,19 @@
             <div class="result-container" id="resultContainer">
                 <h3 id="resultTitle"></h3>
                 <p id="resultMessage"></p>
+                
+                <!-- Risk Category Badge -->
+                <div style="margin: 20px 0; padding: 15px; background: rgba(255,255,255,0.2); border-radius: 8px;">
+                    <div style="font-size: 0.9em; opacity: 0.9; margin-bottom: 5px;">Risk Category</div>
+                    <div id="riskCategory" style="font-size: 1.3em; font-weight: bold;"></div>
+                </div>
+                
+                <!-- Recommendation -->
+                <div style="margin: 20px 0; padding: 15px; background: rgba(255,255,255,0.2); border-radius: 8px;">
+                    <div style="font-size: 0.9em; opacity: 0.9; margin-bottom: 5px;">Lending Recommendation</div>
+                    <div id="recommendation" style="font-size: 1em; line-height: 1.5;"></div>
+                </div>
+                
                 <div class="probability-bars">
                     <div class="probability-item">
                         <div class="probability-label">
@@ -463,6 +476,8 @@
                 const resultContainer = document.getElementById('resultContainer');
                 const resultTitle = document.getElementById('resultTitle');
                 const resultMessage = document.getElementById('resultMessage');
+                const riskCategory = document.getElementById('riskCategory');
+                const recommendation = document.getElementById('recommendation');
                 
                 if (result.prediction === 0) {
                     resultContainer.className = 'result-container result-success';
@@ -473,6 +488,10 @@
                     resultTitle.textContent = '⚠ High Default Risk';
                     resultMessage.textContent = 'This customer is predicted to DEFAULT on their next payment.';
                 }
+                
+                // Display risk category and recommendation
+                riskCategory.textContent = result.risk_category || 'N/A';
+                recommendation.textContent = result.recommendation || 'No recommendation available';
                 
                 // Update probability bars
                 document.getElementById('probNoDefault').textContent = result.probability_no_default.toFixed(2) + '%';
