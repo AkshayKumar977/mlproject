@@ -61,16 +61,35 @@ def predict():
         'PAY_AMT5': float(data['PAY_AMT5']),
         'PAY_AMT6': float(data['PAY_AMT6'])
            }
+    except (ValueError, TypeError) as e:
+        return jsonify({'error': f"Error converting input values: {str(e)}"}),400
         input_df = pd.DataFrame([features])
         numerical_col = ['LIMIT_BAL','BILL_AMT1','BILL_AMT2','BILL_AMT3','BILL_AMT4','BILL_AMT5','BILL_AMT6','PAY_AMT1','PAY_AMT2','PAY_AMT3','PAY_AMT4','PAY_AMT5','PAY_AMT6']
         input_df[numerical_col] = scaler.transform(input_df[numerical_col])
         prediction = model.predict(input_df)[0]
         probability = model.predict_proba(input_df)[0]
+        default_prob = float(probability[1] * 100)
+        no_default_prob = float(probability[0] * 100)
+        if default_prob<30:
+            risk_category = "Low Risk"
+            risk_color = "success"
+            recommendation = "Approved - Low default probability. Standard temrs recommends."
+        elif default_prob < 60:
+            risk_category = "Medium Risk"
+            risk_color = "warning"
+            recommendation = "Review Required - Moderate default risk. Consider higher interest rate or additional colletral."
+        else:
+            risk_category = "High Risk"
+            risk_color = "danger"
+            recommendation = "Caution - High default probability. Recommend rejection or require significant colletral."
         result = {
             "prediction": int(prediction),
             "prediction_text": 'Default' if prediction == 1 else 'Not default',
             'probability_default': float(probability[1]*100),
-            'probability_no_default': float(probability[0]*100)
+            'probability_no_default': float(probability[0]*100),
+            'risk_category': risk_category,
+            'risk_color': risk_color,
+            'recommendation': recommendation
         }
         return jsonify(result)
     except KeyError as e:
